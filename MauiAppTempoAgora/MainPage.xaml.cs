@@ -5,14 +5,12 @@ namespace MauiAppTempoAgora
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private async void Buscar_Clicked(object sender, EventArgs e)
+        private async void Button_Clicked(object sender, EventArgs e)
         {
             try
             {
@@ -49,11 +47,6 @@ namespace MauiAppTempoAgora
                 await DisplayAlert("Ops", ex.Message, "Ok!");
             }
         }
-
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count++;
-            CounterBtn.Text = $"Você clicou {count} vezes";
-        }
     }
 }
+
