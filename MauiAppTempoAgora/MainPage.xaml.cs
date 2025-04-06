@@ -47,6 +47,8 @@ namespace MauiAppTempoAgora
                 await DisplayAlert("Ops", ex.Message, "Ok!");
             }
         }
+
+        
     }
 }
 
