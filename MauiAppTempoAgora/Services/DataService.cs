@@ -1,61 +1,68 @@
 ﻿using MauiAppTempoAgora.Models;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace MauiAppTempoAgora.Services
 {
     public class DataService
     {
-
-        public static async Task <Tempo?> GetPrevisao(string cidade)
+        public static async Task<Tempo?> GetPrevisao(string cidade)
         {
             Tempo? t = null;
             string chave = "a2cfb91d7e9563674459c8d76e3b372f";
 
-            // consulta
-            string url = $"https://api.openweathermap.org/data/2.5/weather?" +
-                $"q={cidade}&units=metric&appid={chave}";
 
-            using (HttpClient client = new HttpClient())
+            // descição em protuguês
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cidade}&units=metric&lang=pt_br&appid={chave}";
+
+
+            try
             {
+                using HttpClient client = new();
 
                 HttpResponseMessage resp = await client.GetAsync(url);
-                    if (resp.IsSuccessStatusCode)
+
+                if (resp.StatusCode == HttpStatusCode.NotFound)
                 {
-                    string jason= await resp.Content.ReadAsStringAsync();
-                    var rascunho = JObject.Parse(jason);
+                    return null; // cidade inválida
+                }
 
-                    DateTime time = new();
-                    DateTime sunrise = time.AddSeconds((double)rascunho["sys"]["sunrise"]).ToLocalTime();
-                    DateTime sunset = time.AddSeconds((double)rascunho["sys"]["sunset"]).ToLocalTime();
+                if (!resp.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Erro de requisição: {resp.StatusCode}");
+                }
 
-                    t = new()
-                    {
-                        // coordenadas
-                        lat = (double)rascunho["coord"]["lat"],
-                        lon = (double)rascunho["coord"]["lon"],
+                string jason = await resp.Content.ReadAsStringAsync();
+                var rascunho = JObject.Parse(jason);
 
-                        // descrição tempo
-                        description = (string)rascunho["weather"][0]["description"],
-                        main = (string)rascunho["weather"][0]["main"],
+                DateTime time = new();
+                DateTime sunrise = time.AddSeconds((double)rascunho["sys"]["sunrise"]).ToLocalTime();
+                DateTime sunset = time.AddSeconds((double)rascunho["sys"]["sunset"]).ToLocalTime();
 
-                        // temperatura
-                        temp_min = (double)rascunho["main"]["temp_min"],
-                        temp_max = (double)rascunho["main"]["temp_max"],
+                t = new()
+                {
+                    lat = (double)rascunho["coord"]["lat"],
+                    lon = (double)rascunho["coord"]["lon"],
+                    description = (string)rascunho["weather"][0]["description"],
+                    main = (string)rascunho["weather"][0]["main"],
+                    temp_min = (double)rascunho["main"]["temp_min"],
+                    temp_max = (double)rascunho["main"]["temp_max"],
+                    speed = (double)rascunho["wind"]["speed"],
+                    visibility = (int)rascunho["visibility"],
+                    sunrise = sunrise.ToString(),
+                    sunset = sunset.ToString(),
+                };
 
-                        // velocidade vento
-                        speed = (double)rascunho["wind"]["speed"],
-
-                        // visibilidade
-                        visibility = (int)rascunho["visibility"],
-
-                        // nascer e por do sol
-                        sunrise = sunrise.ToString(),
-                        sunset = sunset.ToString(),
-
-                    };// fecha objeto do tempo
-                }// fecha if
-            }// fecha laço
-            return t;
+                return t;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Sem conexão com a internet.Verifique sua rede.\n" + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro inesperado: " + ex.Message);
+            }
         }
     }
 }

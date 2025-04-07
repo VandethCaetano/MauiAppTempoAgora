@@ -18,15 +18,26 @@ namespace MauiAppTempoAgora
                 {
                     Tempo? t = await DataService.GetPrevisao(txt_cidade.Text);
                     if (t != null)
-                    {
+
+                    {                           // coordenadas
                         string dados_previsao = $"Latitude: {t.lat} \n" +
                                                 $"Longitude: {t.lon} \n" +
+
+                                                // temperatura
                                                 $"Temperatura Mínima: {t.temp_min} \n" +
                                                 $"Temperatura Máxima: {t.temp_max} \n" +
+
+                                                // visibilidade
                                                 $"Visibilidade: {t.visibility} \n" +
+
+                                                // velocidade vento
                                                 $"Velocidade do Vento: {t.speed} \n" +
+
+                                                // descrição tempo
                                                 $"Main: {t.main} \n" +
                                                 $"Descrição: {t.description} \n" +
+
+                                                // nascer e por do sol
                                                 $"Nascer do Sol: {t.sunrise} \n" +
                                                 $"Por do Sol: {t.sunset} \n";
 
@@ -34,7 +45,8 @@ namespace MauiAppTempoAgora
                     }
                     else
                     {
-                        lbl_res.Text = "Sem dados de previsão.";
+                        await DisplayAlert("Cidade não encontrada", "Digite um nome de cidade válido.", "OK");
+                        lbl_res.Text = "";
                     }
                 }
                 else
@@ -44,11 +56,8 @@ namespace MauiAppTempoAgora
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ops", ex.Message, "Ok!");
+                await DisplayAlert("Sem conexão com a internet", ex.Message, "OK");
             }
         }
-
-        
     }
 }
-

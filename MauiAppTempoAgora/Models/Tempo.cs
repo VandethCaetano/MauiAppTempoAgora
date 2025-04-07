@@ -6,7 +6,6 @@
         public double? lon { get; set; }
         public double? lat { get; set; }
 
-
         // temperatura
         public double? temp_min { get; set; }
         public double? temp_max { get; set; }

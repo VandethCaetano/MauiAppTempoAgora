@@ -9,13 +9,6 @@
             <Button Text="Buscar" Clicked="Button_Clicked" />
             <Label x:Name="lbl_res" />
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
